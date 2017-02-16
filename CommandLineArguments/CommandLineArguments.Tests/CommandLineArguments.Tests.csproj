@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{92B19DBF-0B65-432A-830B-3D3E88EC89A7}</ProjectGuid>
+    <ProjectGuid>{84E58557-D8A7-42B0-975F-7DAA542A307D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CommandLineArguments</RootNamespace>
-    <AssemblyName>CommandLineArguments</AssemblyName>
+    <RootNamespace>CommandLineArguments.Tests</RootNamespace>
+    <AssemblyName>CommandLineArguments.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -38,12 +38,38 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="xunit.abstractions">
+      <HintPath>..\packages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xunit.assert">
+      <HintPath>..\packages\xunit.assert.2.1.0\lib\dotnet\xunit.assert.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xunit.core">
+      <HintPath>..\packages\xunit.extensibility.core.2.1.0\lib\dotnet\xunit.core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="xunit.execution.desktop">
+      <HintPath>..\packages\xunit.extensibility.execution.2.1.0\lib\net45\xunit.execution.desktop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArgumentAttribute.cs" />
-    <Compile Include="AttributeField.cs" />
-    <Compile Include="Context.cs" />
+    <Compile Include="ArgumentAttributeTests.cs" />
+    <Compile Include="DblKnowns.cs" />
+    <Compile Include="IntKnowns.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StrKnowns.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CommandLineArguments\CommandLineArguments.csproj">
+      <Project>{92b19dbf-0b65-432a-830b-3d3e88ec89a7}</Project>
+      <Name>CommandLineArguments</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
