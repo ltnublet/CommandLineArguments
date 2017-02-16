@@ -17,7 +17,12 @@ namespace Arguments.Tests
         [Fact]
         public void SetDefaults_KnownValues_ShouldSucceed()
         {
+            Context.Register(this);
+            Context.Initialize(null, null, null);
 
+            Assert.Equal(StrKnowns.Default, StrAttribute);
+            Assert.Equal(DblKnowns.Default, DblAttribute.ToString());
+            Assert.Equal(IntKnowns.Default, IntAttribute.ToString());
         }
     }
 }
