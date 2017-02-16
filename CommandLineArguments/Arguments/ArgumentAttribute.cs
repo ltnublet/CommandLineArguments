@@ -33,14 +33,47 @@ namespace Arguments
             this.Description = description;
         }
 
+        /// <summary>
+        /// The default value for the associated field. A parsable string for all non-string types.
+        /// </summary>
+        /// <example>
+        /// For a field of type string, "An Example String".
+        /// For a field of type double, "8675.309".
+        /// For a field of type int, "8675309".
+        /// </example>
         public string DefaultValue { get; private set; }
 
+        /// <summary>
+        /// An example value for the associated field. A parsable string for all non-string types.
+        /// </summary>
+        /// <example>
+        /// See <see cref="DefaultValue"/> for examples.
+        /// </example>
         public string ExampleValue { get; private set; }
 
+        /// <summary>
+        /// The long name by which the field is exposed as an argument.
+        /// </summary>
+        /// <example>
+        /// If the associated field should be set using the argument "--ExampleParameter {value}", "ExampleParameter".
+        /// </example>
         public string LongName { get; private set; }
 
+        /// <summary>
+        /// The short name by which the field is exposed as an argument.
+        /// </summary>
+        /// <example>
+        /// If the associated field should be set using the argument "-ep {value}", "ep".
+        /// </example>
         public string ShortName { get; private set; }
 
+        /// <summary>
+        /// A brief description of what the associated field does or is used for.
+        /// </summary>
+        /// <example>
+        /// If the associated field is an interval measured in seconds between cache refreshes, 
+        /// "Controls the cache refresh interval (seconds)".
+        /// </example>
         public string Description { get; private set; }
     }
 }
