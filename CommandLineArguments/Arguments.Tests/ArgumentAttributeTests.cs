@@ -18,7 +18,7 @@ namespace Arguments.Tests
         public void SetDefaults_KnownValues_ShouldSucceed()
         {
             Context.Register(this);
-            Context.Initialize(null, null, null);
+            Context.Initialize();
 
             Assert.Equal(StrKnowns.Default, StrAttribute);
             Assert.Equal(DblKnowns.Default, DblAttribute.ToString());

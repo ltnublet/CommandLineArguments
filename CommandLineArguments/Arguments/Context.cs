@@ -36,12 +36,20 @@ namespace Arguments
         /// <param name="parameterDelimiters">The allowed parameter delimiters preceeding long or short names.</param>
         /// <param name="helpParameter">The help parameter - if present in <paramref name="args"/>, short-circuit setting instance field values.</param>
         /// <returns>True if help was requested, and false otherwise.</returns>
-        public static bool Initialize(string[] args, string[] parameterDelimiters, string helpParameter)
+        public static bool Initialize(string[] args = null, string[] parameterDelimiters = null, string helpParameter = null)
         {
             if (args == null)
             {
                 args = new string[] { };
+            }
+
+            if (parameterDelimiters == null)
+            {
                 parameterDelimiters = new string[] { };
+            }
+
+            if (helpParameter == null)
+            {
                 helpParameter = string.Empty;
             }
 
