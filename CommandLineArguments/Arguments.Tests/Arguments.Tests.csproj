@@ -55,7 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArgumentAttributeTests.cs" />
+    <Compile Include="ContextTests.cs" />
     <Compile Include="DblKnowns.cs" />
     <Compile Include="IntKnowns.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
