@@ -71,10 +71,19 @@ namespace Arguments
                     throw new NotImplementedException();
                 }
 
-                Context.SetInstanceFieldValues(userSupplied.ToArray());
+                Context.SetInstanceFieldValues(Context.Fields.Except(userSupplied), Context.instances);
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Set all instance fields to their default values for only a single instance.
+        /// </summary>
+        /// <param name="instance">The object to perform the operation on.</param>
+        public static void Initialize(object instance)
+        {
+            Context.SetInstanceFieldValues(Context.Fields, new object[] { instance });
         }
 
         /// <summary>
@@ -124,20 +133,21 @@ namespace Arguments
         }
 
         /// <summary>
-        /// For all registered <see cref="Fields"/> except those in <paramref name="ignore"/>, set the associated instance's field to the default.
+        /// For all specified <see cref="AttributeField"/>s, for all instances in the <paramref name="instanceSource"/>, set the associated fields to the default.
         /// </summary>
-        /// <param name="ignore">The <see cref="AttributeField"/>s to ignore - these will not have their assigned value changed.</param>
-        private static void SetInstanceFieldValues(AttributeField[] ignore)
+        /// <param name="include">The <see cref="AttributeField"/>s to include - these will have their assigned value changed.</param>
+        /// <param name="instanceSource">The instances upon which to change the associated field values.</param>
+        private static void SetInstanceFieldValues(
+            IEnumerable<AttributeField> include, 
+            IEnumerable<object> instanceSource)
         {
-            foreach (AttributeField field in Context.Fields.Except(ignore))
+            foreach (AttributeField field in include)
             {
-                field.Field.SetValue(
-                    Context.instances.Single(
-                        x =>
-                        x.GetType()
-                            .GetFields(Context.bindingFlags)
-                            .Contains(field.Field)),
-                    Convert.ChangeType(field.Attr.DefaultValue, field.Field.FieldType));
+                foreach (object instance in 
+                    instanceSource.Where(x => x.GetType().GetFields(Context.bindingFlags).Contains(field.Field)))
+                {
+                    field.Field.SetValue(instance, Convert.ChangeType(field.Attr.DefaultValue, field.Field.FieldType));
+                }
             }
         }
     }
