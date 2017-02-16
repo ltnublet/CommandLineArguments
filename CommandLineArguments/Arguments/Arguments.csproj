@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{92B19DBF-0B65-432A-830B-3D3E88EC89A7}</ProjectGuid>
+    <ProjectGuid>{5021B2F0-46A9-4BAE-B49E-27DFE1F7F2A9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CommandLineArguments</RootNamespace>
-    <AssemblyName>CommandLineArguments</AssemblyName>
+    <RootNamespace>Arguments</RootNamespace>
+    <AssemblyName>Arguments</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

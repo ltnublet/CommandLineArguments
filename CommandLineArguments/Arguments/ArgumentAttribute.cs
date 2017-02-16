@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace CommandLineArguments
+namespace Arguments
 {
     /// <summary>
     /// Mark fields to be handled as command-line arguments.

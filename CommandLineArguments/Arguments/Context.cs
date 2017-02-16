@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace CommandLineArguments
+namespace Arguments
 {
     public static class Context
     {
@@ -19,6 +19,7 @@ namespace CommandLineArguments
         private static AttributeField[] Initialize()
         {
             Assembly.GetExecutingAssembly();
+            throw new NotImplementedException();
         }
     }
 }

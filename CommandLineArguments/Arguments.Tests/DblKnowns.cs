@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CommandLineArguments.Tests
+namespace Arguments.Tests
 {
     internal static class DblKnowns
     {

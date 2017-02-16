@@ -1,7 +1,7 @@
 ﻿using System;
 using Xunit;
 
-namespace CommandLineArguments.Tests
+namespace Arguments.Tests
 {
     public class ArgumentAttributesTests
     {
