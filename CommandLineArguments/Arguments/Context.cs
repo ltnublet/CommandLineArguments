@@ -14,18 +14,18 @@ namespace Arguments
         private static BindingFlags bindingFlags = 
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField;
 
-        private static Lazy<AttributeField[]> fields = new Lazy<AttributeField[]>(Context.Iterate);
+        private static Lazy<ArgumentDictionary> fields = new Lazy<ArgumentDictionary>(Context.Iterate);
 
         private static List<object> instances = new List<object>();
 
         /// <summary>
         /// All fields decorated with <see cref="ArgumentAttribute"/>s in the executing assembly.
         /// </summary>
-        public static AttributeField[] Fields
+        public static IEnumerable<AttributeField> Fields
         {
             get
             {
-                return fields.Value;
+                return fields.Value.Values;
             }
         }
 
@@ -99,12 +99,13 @@ namespace Arguments
         /// Reflects over the assembly to populate the <see cref="Fields"/>.
         /// </summary>
         /// <returns>
-        /// An array of <see cref="AttributeField"/>s representing all fields in the executing assembly decorated with the <see cref="ArgumentAttribute"/>.
+        /// An <see cref="ArgumentDictionary"/>s representing all fields in the executing assembly decorated with an <see cref="ArgumentAttribute"/>.
         /// </returns>
-        private static AttributeField[] Iterate()
+        private static ArgumentDictionary Iterate()
         {
-            List<AttributeField> scratch = new List<AttributeField>();
+            ArgumentDictionary returnValue = new ArgumentDictionary();
             List<Type> types = new List<Type>();
+
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 try
@@ -124,12 +125,12 @@ namespace Arguments
                     ArgumentAttribute attribute = field.GetCustomAttributes<ArgumentAttribute>().FirstOrDefault();
                     if (attribute != null)
                     {
-                        scratch.Add(new AttributeField(attribute, field));
+                        returnValue.Add(attribute, new AttributeField(attribute, field));
                     }
                 }
             }
 
-            return scratch.ToArray();
+            return returnValue;
         }
 
         /// <summary>
