@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Arguments.Collections;
+using System;
+using System.Linq;
 using Xunit;
 
 namespace Arguments.Tests
@@ -26,9 +28,9 @@ namespace Arguments.Tests
 
             Context.Initialize();
 
-            Assert.True(ContextTests.FieldsEqual(this));
-            Assert.True(ContextTests.FieldsEqual(instanceOne));
-            Assert.True(ContextTests.FieldsEqual(instanceTwo));
+            Assert.True(ContextTests.DefaultFieldsEqual(this));
+            Assert.True(ContextTests.DefaultFieldsEqual(instanceOne));
+            Assert.True(ContextTests.DefaultFieldsEqual(instanceTwo));
         }
 
         [Fact]
@@ -36,10 +38,54 @@ namespace Arguments.Tests
         {
             Context.Initialize(this);
 
-            Assert.True(ContextTests.FieldsEqual(this));
+            Assert.True(ContextTests.DefaultFieldsEqual(this));
         }
 
-        private static bool FieldsEqual(ContextTests instance)
+        [Fact]
+        public void Initialize_RegisteredInstances_NonDefaultValues_ShouldSucceed()
+        {
+            const string testValue = "This Is The Big Test";
+
+            Context.Register(this);
+
+            Context.Initialize(new string[] { "-KnownLongStr", testValue }, new string[] { "-" });
+
+            Assert.Equal(testValue, this.StrAttribute);
+            Assert.Equal(double.Parse(DblKnowns.Default), this.DblAttribute);
+            Assert.Equal(int.Parse(IntKnowns.Default), this.IntAttribute);
+        }
+
+        [Fact]
+        public void ParseArgs_SuppliedArgs_ShouldSucceed()
+        {
+            Tree<string> result = Context.ParseArgs(
+                "Context",
+                new string[] { "-" }.AsEnumerable(),
+                new string[] {
+                    "-this", "is", "a", "test",
+                    "-in", "which",
+                    "-I",
+                    "-supply",
+                    "-many", "arguments", "with",
+                    "-a", "valid",
+                    "-delimiter" });
+
+            // TODO: Should probably expose a better way of indexing into the tree than this.
+            Assert.Equal("this", result.Root.Children.First().Value);
+            Assert.Equal("in", result.Root.Children.Skip(1).First().Value);
+            Assert.Equal("I", result.Root.Children.Skip(2).First().Value);
+            Assert.Equal("supply", result.Root.Children.Skip(3).First().Value);
+            Assert.Equal("many", result.Root.Children.Skip(4).First().Value);
+            Assert.Equal("a", result.Root.Children.Skip(5).First().Value);
+            Assert.Equal("delimiter", result.Root.Children.Skip(6).First().Value);
+
+            Assert.Equal("is", result.Root.Children.First().Children.First().Value);
+            Assert.Equal("a", result.Root.Children.First().Children.Skip(1).First().Value);
+            Assert.Equal("test", result.Root.Children.First().Children.Skip(2).First().Value);
+
+        }
+
+        private static bool DefaultFieldsEqual(ContextTests instance)
         {
             return StrKnowns.Default.Equals(instance.StrAttribute)
                 && DblKnowns.Default.Equals(instance.DblAttribute.ToString())

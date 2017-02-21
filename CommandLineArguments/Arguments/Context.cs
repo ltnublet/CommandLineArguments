@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Arguments.Collections;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -66,9 +67,27 @@ namespace Arguments
             {
                 List<AttributeField> userSupplied = new List<AttributeField>();
 
-                for (int arg = 0; arg < args.Length; arg++)
+                Tree<string> parsed = Context.ParseArgs("Context", parameterDelimiters, args);
+                foreach (TreeNode<string> argument in parsed.Root.Children)
                 {
-                    // TODO: finish this
+                    if (fields.Value.ContainsKey(argument.Value) 
+                        && fields.Value[argument.Value].Count() == argument.Children.Count)
+                    {
+                        for (int counter = 0; counter < argument.Children.Count; counter++)
+                        {
+                            AttributeField currentField = fields.Value[argument.Value].Skip(counter).First();
+                            Context.SetInstanceFieldValue(
+                                argument.Children.Skip(counter).First().Value,
+                                currentField,
+                                Context.instances);
+
+                            userSupplied.Add(currentField);
+                        }
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"Unrecognized or malformed argument \"{argument.Value}\".");
+                    }
                 }
 
                 Context.SetInstanceFieldValues(Context.Fields.Except(userSupplied), Context.instances);
@@ -95,7 +114,35 @@ namespace Arguments
             Context.instances.Add(instance);
         }
 
-        ////private static 
+        /// <summary>
+        /// Converts the supplied <paramref name="args"/> to a <see cref="Tree{string}"/>, using the <paramref name="parameterDelimiters"/> as the set of valid parameter delimiters upon which to split it.
+        /// </summary>
+        /// <param name="rootValue">The value of the root element.</param>
+        /// <param name="parameterDelimiters">The set of valid parameter delimiters.</param>
+        /// <param name="args">The arguments to convert to a <see cref="Tree{string}"/>.</param>
+        /// <returns>A <see cref="Tree{string}"/> representing the supplied <paramref name="args"/>, with a root of value <paramref name="rootValue"/>.</returns>
+        internal static Tree<string> ParseArgs(string rootValue, IEnumerable<string> parameterDelimiters, string[] args)
+        {
+            TreeNode<string> root = new TreeNode<string>(rootValue);
+            TreeNode<string> current = root;
+            for (int arg = 0; arg < args.Length; arg++)
+            {
+                string debug = args[arg];
+                TreeNode<string> newNode = new TreeNode<string>(StringUtil.Chop(args[arg], parameterDelimiters));
+
+                if (newNode.Value != args[arg])
+                {
+                    current = newNode;
+                    root.Add(newNode);
+                }
+                else
+                {
+                    current.Add(newNode);
+                }
+            }
+
+            return new Tree<string>(root);
+        }
 
         /// <summary>
         /// Reflects over the assembly to populate the <see cref="Fields"/>.
@@ -146,11 +193,25 @@ namespace Arguments
         {
             foreach (AttributeField field in include)
             {
-                foreach (object instance in 
-                    instanceSource.Where(x => x.GetType().GetFields(Context.bindingFlags).Contains(field.Field)))
-                {
-                    field.Field.SetValue(instance, Convert.ChangeType(field.Attr.DefaultValue, field.Field.FieldType));
-                }
+                Context.SetInstanceFieldValue(field.Attr.DefaultValue, field, instanceSource);
+            }
+        }
+
+        /// <summary>
+        /// For the specified <see cref="AttributeField"/> <paramref name="field"/>, for all instances in the <paramref name="instanceSource"/>, set the associated field to the supplied <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value to use for the <paramref name="field"/>'s new value.</param>
+        /// <param name="field">The <see cref="AttributeField"/> to target - instances in <paramref name="instanceSource"/> will have their value changed for this field.</param>
+        /// <param name="instanceSource">The instances upon which to change the associated fields values.</param>
+        private static void SetInstanceFieldValue(
+            string value,
+            AttributeField field,
+            IEnumerable<object> instanceSource)
+        {
+            foreach (object instance in
+                instanceSource.Where(x => x.GetType().GetFields(Context.bindingFlags).Contains(field.Field)))
+            {
+                field.Field.SetValue(instance, Convert.ChangeType(value, field.Field.FieldType));
             }
         }
     }

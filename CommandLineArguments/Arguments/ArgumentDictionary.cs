@@ -33,8 +33,11 @@ namespace Arguments
             {
                 if (this.cachedValues == null)
                 {
-                    this.cachedValues = this.innerContainer.Values.Select(x =>
-                        x.AsEnumerable()).Aggregate((y, z) => z.Concat(y));
+                    this.cachedValues = this.innerContainer.Values
+                        .Select(x => x.OrderBy(y => y.Attr.Position))
+                        .Select(x => x.AsEnumerable())
+                        .Aggregate((x, y) => y.Concat(x))
+                        .Distinct();
                 }
 
                 return this.cachedValues;
@@ -108,6 +111,16 @@ namespace Arguments
             }
 
             this.cachedValues = null;
+        }
+
+        /// <summary>
+        /// Determines whether the <see cref="ArgumentDictionary"/> contains the specified <paramref name="key"/>.
+        /// </summary>
+        /// <param name="key">The key to locate in the <see cref="ArgumentDictionary"/>.</param>
+        /// <returns>True if the <see cref="ArgumentDictionary"/> contained the key, and false otherwise.</returns>
+        public bool ContainsKey(string key)
+        {
+            return this.innerContainer.ContainsKey(key);
         }
     }
 }
