@@ -1,9 +1,9 @@
-﻿using Arguments.Collections;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Arguments.Collections;
 
 namespace Arguments
 {
@@ -70,23 +70,40 @@ namespace Arguments
                 Tree<string> parsed = Context.ParseArgs("Context", parameterDelimiters, args);
                 foreach (TreeNode<string> argument in parsed.Root.Children)
                 {
-                    if (fields.Value.ContainsKey(argument.Value) 
-                        && fields.Value[argument.Value].Count() == argument.Children.Count)
+                    if (fields.Value.ContainsKey(argument.Value))
                     {
-                        for (int counter = 0; counter < argument.Children.Count; counter++)
+                        IEnumerable<AttributeField> currentPosition = fields.Value[argument.Value];
+                        if (currentPosition.Count() == 1                    // There is a single expected field for that attribute.
+                            && currentPosition.First().Attr.Position == -1  // The only expected field is a flag.
+                            && argument.Children.Count == 0)                // No value was supplied for the field.
                         {
-                            AttributeField currentField = fields.Value[argument.Value].Skip(counter).First();
+                            // TODO: Find out why "True" isn't being converted to logical true.
                             Context.SetInstanceFieldValue(
-                                argument.Children.Skip(counter).First().Value,
-                                currentField,
+                                "True", 
+                                currentPosition.First(), 
                                 Context.instances);
+                        }
+                        else if (currentPosition.Count() == argument.Children.Count)
+                        {
+                            for (int counter = 0; counter < argument.Children.Count; counter++)
+                            {
+                                AttributeField currentField = currentPosition.ElementAt(counter);
+                                Context.SetInstanceFieldValue(
+                                    argument.Children[counter].Value,
+                                    currentField,
+                                    Context.instances);
 
-                            userSupplied.Add(currentField);
+                                userSupplied.Add(currentField);
+                            }
+                        }
+                        else
+                        {
+                            throw new ArgumentException($"Malformed argument \"{argument.Value}\".");
                         }
                     }
                     else
                     {
-                        throw new ArgumentException($"Unrecognized or malformed argument \"{argument.Value}\".");
+                        throw new ArgumentException($"Unrecognized argument \"{argument.Value}\".");
                     }
                 }
 

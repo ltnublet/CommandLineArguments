@@ -55,6 +55,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoolKnowns.cs" />
     <Compile Include="ContextTests.cs" />
     <Compile Include="DblKnowns.cs" />
     <Compile Include="IntKnowns.cs" />

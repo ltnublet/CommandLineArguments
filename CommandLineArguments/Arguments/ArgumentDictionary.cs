@@ -48,12 +48,12 @@ namespace Arguments
         /// Gets the group of <see cref="AttributeField"/>s with the corresponding <see cref="ArgumentAttribute.LongName"/> or <see cref="AttributeField.Attr.ShortName"/>.
         /// </summary>
         /// <param name="key">The <see cref="ArgumentAttribute.LongName"/> or <see cref="AttributeField.Attr.ShortName"/> to index on.</param>
-        /// <returns>The corresponding group of <see cref="AttributeField"/>s.</returns>
+        /// <returns>The corresponding group of <see cref="AttributeField"/>s, ordered by position.</returns>
         public IEnumerable<AttributeField> this[string key]
         {
             get
             {
-                return this.innerContainer[key];
+                return this.innerContainer[key].OrderBy(x => x.Attr.Position);
             }
         }
 
