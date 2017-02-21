@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Arguments
 {
     /// <summary>
-    /// Represents a collection of <see cref="AttributeField"/>s grouped by <see cref="AttributeField.Attr.LongName"/>.
+    /// Represents a collection of <see cref="AttributeField"/>s grouped by <see cref="AttributeField.Attr.LongName"/> and <see cref="AttributeField.Attr.ShortName"/>.
     /// </summary>
     internal class ArgumentDictionary
     {
@@ -42,9 +42,9 @@ namespace Arguments
         }
 
         /// <summary>
-        /// Gets the group of <see cref="AttributeField"/>s with the corresponding <see cref="ArgumentAttribute.LongName"/>.
+        /// Gets the group of <see cref="AttributeField"/>s with the corresponding <see cref="ArgumentAttribute.LongName"/> or <see cref="AttributeField.Attr.ShortName"/>.
         /// </summary>
-        /// <param name="key">The <see cref="ArgumentAttribute.LongName"/> to index on.</param>
+        /// <param name="key">The <see cref="ArgumentAttribute.LongName"/> or <see cref="AttributeField.Attr.ShortName"/> to index on.</param>
         /// <returns>The corresponding group of <see cref="AttributeField"/>s.</returns>
         public IEnumerable<AttributeField> this[string key]
         {
@@ -57,7 +57,7 @@ namespace Arguments
         /// <summary>
         /// Adds the supplied <see cref="AttributeField"/>s to the <see cref="ArgumentDictionary"/>.
         /// </summary>
-        /// <param name="attr">The <see cref="ArgumentAttribute"/> to use the <see cref="ArgumentAttribute.LongName"/> of.</param>
+        /// <param name="attr">The <see cref="ArgumentAttribute"/> to use the <see cref="ArgumentAttribute.LongName"/> or <see cref="AttributeField.Attr.ShortName"/> of.</param>
         /// <param name="fields">The <see cref="AttributeField"/>s to add to the <see cref="ArgumentDictionary"/>.</param>
         public void Add(ArgumentAttribute attr, IEnumerable<AttributeField> fields)
         {
@@ -70,13 +70,22 @@ namespace Arguments
                 this.innerContainer.Add(attr.LongName, fields.ToList());
             }
 
+            if (this.innerContainer.ContainsKey(attr.ShortName))
+            {
+                this.innerContainer[attr.ShortName].AddRange(fields);
+            }
+            else
+            {
+                this.innerContainer.Add(attr.ShortName, fields.ToList());
+            }
+
             this.cachedValues = null;
         }
 
         /// <summary>
         /// Adds the supplied <see cref="AttributeField"/> to the <see cref="ArgumentDictionary"/>.
         /// </summary>
-        /// <param name="attr">The <see cref="ArgumentAttribute"/> to use the <see cref="ArgumentAttribute.LongName"/> of.</param>
+        /// <param name="attr">The <see cref="ArgumentAttribute"/> to use the <see cref="ArgumentAttribute.LongName"/> or <see cref="AttributeField.Attr.ShortName"/> of.</param>
         /// <param name="fields">The <see cref="AttributeField"/> to add to the <see cref="ArgumentDictionary"/>.</param>
         public void Add(ArgumentAttribute attr, AttributeField field)
         {
@@ -87,6 +96,15 @@ namespace Arguments
             else
             {
                 this.innerContainer.Add(attr.LongName, new List<AttributeField> { field });
+            }
+
+            if (this.innerContainer.ContainsKey(attr.ShortName))
+            {
+                this.innerContainer[attr.ShortName].Add(field);
+            }
+            else
+            {
+                this.innerContainer.Add(attr.ShortName, new List<AttributeField> { field });
             }
 
             this.cachedValues = null;

@@ -66,9 +66,9 @@ namespace Arguments
             {
                 List<AttributeField> userSupplied = new List<AttributeField>();
 
-                for (int arg = 0; arg < args.Length - 2; arg += 2)
+                for (int arg = 0; arg < args.Length; arg++)
                 {
-                    throw new NotImplementedException();
+                    // TODO: finish this
                 }
 
                 Context.SetInstanceFieldValues(Context.Fields.Except(userSupplied), Context.instances);
@@ -94,6 +94,8 @@ namespace Arguments
         {
             Context.instances.Add(instance);
         }
+
+        ////private static 
 
         /// <summary>
         /// Reflects over the assembly to populate the <see cref="Fields"/>.
