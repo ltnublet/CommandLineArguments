@@ -90,8 +90,7 @@ namespace Arguments.Tests
         {
             Context.Register(this);
 
-            Context.Initialize(
-                new string[] { $"-{BoolKnowns.LongName}" }, new string[] { "-" });
+            Context.Initialize(new string[] { $"-{BoolKnowns.LongName}" }, new string[] { "-" });
 
             Assert.Equal(true, this.BoolAttributeFlag);
         }

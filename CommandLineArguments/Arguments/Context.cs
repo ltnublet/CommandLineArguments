@@ -17,7 +17,11 @@ namespace Arguments
 
         private static Lazy<ArgumentDictionary> fields = new Lazy<ArgumentDictionary>(Context.Iterate);
 
-        private static List<object> instances = new List<object>();
+        /// <summary>
+        /// Backing field for the <see cref="Context.instances"/> property. Used to allow the garbage collector to
+        /// clean up objects without the user needing to keep track of what they've registered.
+        /// </summary>
+        private static List<WeakReference<object>> backingInstances = new List<WeakReference<object>>();
 
         /// <summary>
         /// All fields decorated with <see cref="ArgumentAttribute"/>s in the executing assembly.
@@ -27,6 +31,23 @@ namespace Arguments
             get
             {
                 return fields.Value.Values;
+            }
+        }
+
+        /// <summary>
+        /// Hides the <see cref="Context.backingInstances"/> field from consumers to simplify use by removing invalid
+        /// objects before returning them.
+        /// </summary>
+        private static IEnumerable<object> instances
+        {
+            get
+            {
+                backingInstances.RemoveAll(x => !x.TryGetTarget(out object buffer));
+                return backingInstances.Select(x =>
+                {
+                    x.TryGetTarget(out object buffer);
+                    return buffer;
+                });
             }
         }
 
@@ -77,11 +98,12 @@ namespace Arguments
                             && currentPosition.First().Attr.Position == -1  // The only expected field is a flag.
                             && argument.Children.Count == 0)                // No value was supplied for the field.
                         {
-                            // TODO: Find out why "True" isn't being converted to logical true.
                             Context.SetInstanceFieldValue(
                                 "True", 
                                 currentPosition.First(), 
                                 Context.instances);
+
+                            userSupplied.Add(currentPosition.First());
                         }
                         else if (currentPosition.Count() == argument.Children.Count)
                         {
@@ -128,7 +150,10 @@ namespace Arguments
         /// <param name="instance"></param>
         public static void Register(object instance)
         {
-            Context.instances.Add(instance);
+            if (instance != null)
+            {
+                Context.backingInstances.Add(new WeakReference<object>(instance));
+            }
         }
 
         /// <summary>
