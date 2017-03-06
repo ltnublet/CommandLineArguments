@@ -2,10 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Arguments.Collections
+namespace Drexel.Arguments.Collections
 {
     /// <summary>
     /// Represents a generic node in a tree, containing a value of type T, and possessing some parents and children.

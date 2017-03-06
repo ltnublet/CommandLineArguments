@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using Arguments.Collections;
+using Drexel.Arguments.Collections;
 
-namespace Arguments
+namespace Drexel.Arguments
 {
     /// <summary>
     /// Maintains the executing context.

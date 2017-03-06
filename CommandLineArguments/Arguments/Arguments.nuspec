@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Drexel.Arguments</id>
+    <version>$version$-alpha</version>
+    <title>$title$</title>
+    <authors>Max Drexel</authors>
+    <owners>Max Drexel</owners>
+    <licenseUrl>https://github.com/ltnublet/CommandLineArguments/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/ltnublet/CommandLineArguments</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Initial release.</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>arguments</tags>
+  </metadata>
+</package>

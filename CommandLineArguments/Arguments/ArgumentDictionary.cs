@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Arguments
+namespace Drexel.Arguments
 {
     /// <summary>
     /// Represents a collection of <see cref="AttributeField"/>s grouped by <see cref="AttributeField.Attr.LongName"/> and <see cref="AttributeField.Attr.ShortName"/>.

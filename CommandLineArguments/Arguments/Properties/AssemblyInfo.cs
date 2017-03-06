@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Arguments")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Drexel.Arguments")]
+[assembly: AssemblyDescription("Library for simple user-supplied argument handling.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Arguments")]
+[assembly: AssemblyCompany("Drexel")]
+[assembly: AssemblyProduct("Drexel.Arguments")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -32,8 +32,8 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("0.0.1.0")]
+[assembly: AssemblyFileVersion("0.0.1.0")]
 
 // Add Tests project to list of assemblies which can access internals:
 [assembly: InternalsVisibleTo("Arguments.Tests")]

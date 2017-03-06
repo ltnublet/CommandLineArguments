@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Arguments
+﻿namespace Drexel.Arguments
 {
     /// <summary>
     /// The minimum interface an argument must expose to be parsed.

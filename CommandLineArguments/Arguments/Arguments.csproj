@@ -54,5 +54,8 @@
     <Compile Include="Sets\ArgumentSet.cs" />
     <Compile Include="StringUtil.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Arguments.nuspec" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

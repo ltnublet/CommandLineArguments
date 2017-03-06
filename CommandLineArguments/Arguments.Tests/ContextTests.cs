@@ -1,7 +1,7 @@
-﻿using Arguments.Collections;
-using System;
-using System.Linq;
+﻿using System.Linq;
 using Xunit;
+using Drexel.Arguments;
+using Drexel.Arguments.Collections;
 
 namespace Arguments.Tests
 {

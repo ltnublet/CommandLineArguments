@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Arguments
+namespace Drexel.Arguments
 {
     /// <summary>
     /// Essentially a named tuple for pairs of <see cref="ArgumentAttribute"/>s and <see cref="FieldInfo"/>s.

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Arguments
+namespace Drexel.Arguments
 {
     /// <summary>
     /// Mark fields to be handled as command-line arguments.
