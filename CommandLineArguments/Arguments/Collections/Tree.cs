@@ -19,6 +19,7 @@ namespace Arguments.Collections
         /// <param name="root">The root of the tree. Must be non-null.</param>
         public Tree(TreeNode<T> root)
         {
+            // Spurious SA0102 error caused by C#7 feature.
             this.Root = root ?? 
                 throw new ArgumentNullException(
                     nameof(root), 

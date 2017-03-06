@@ -42,14 +42,16 @@
   <ItemGroup>
     <Compile Include="ArgumentAttribute.cs" />
     <Compile Include="ArgumentDictionary.cs" />
-    <Compile Include="ArgumentSet.cs" />
+    <Compile Include="ArgumentGroup.cs" />
     <Compile Include="AttributeField.cs" />
     <Compile Include="Collections\Tree.cs" />
     <Compile Include="Collections\TreeNode.cs" />
     <Compile Include="Context.cs">
       <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
+    <Compile Include="IArgument.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sets\ArgumentSet.cs" />
     <Compile Include="StringUtil.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -99,6 +99,7 @@ namespace Arguments.Collections
         /// </summary>
         public void Dispose()
         {
+            // Spurious SA0102 error caused by C#7 out variable feature.
             if (this.Value is IDisposable asDisposable)
             {
                 asDisposable.Dispose();

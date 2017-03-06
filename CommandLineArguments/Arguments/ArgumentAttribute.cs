@@ -6,7 +6,7 @@ namespace Arguments
     /// Mark fields to be handled as command-line arguments.
     /// </summary>
     [AttributeUsage(AttributeTargets.Field)]
-    public class ArgumentAttribute : Attribute
+    public class ArgumentAttribute : Attribute, IArgument<string>
     {
         /// <summary>
         /// Instantiates an <see cref="ArgumentAttribute"/> using the supplied parameters.
