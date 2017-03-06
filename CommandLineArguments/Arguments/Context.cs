@@ -26,7 +26,7 @@ namespace Arguments
         /// <summary>
         /// All fields decorated with <see cref="ArgumentAttribute"/>s in the executing assembly.
         /// </summary>
-        public static IEnumerable<AttributeField> Fields
+        internal static IEnumerable<AttributeField> Fields
         {
             get
             {
@@ -38,7 +38,7 @@ namespace Arguments
         /// Hides the <see cref="Context.backingInstances"/> field from consumers to simplify use by removing invalid
         /// objects before returning them.
         /// </summary>
-        private static IEnumerable<object> instances
+        private static IEnumerable<object> Instances
         {
             get
             {
@@ -101,7 +101,7 @@ namespace Arguments
                             Context.SetInstanceFieldValue(
                                 "True", 
                                 currentPosition.First(), 
-                                Context.instances);
+                                Context.Instances);
 
                             userSupplied.Add(currentPosition.First());
                         }
@@ -113,7 +113,7 @@ namespace Arguments
                                 Context.SetInstanceFieldValue(
                                     argument.Children[counter].Value,
                                     currentField,
-                                    Context.instances);
+                                    Context.Instances);
 
                                 userSupplied.Add(currentField);
                             }
@@ -129,7 +129,7 @@ namespace Arguments
                     }
                 }
 
-                Context.SetInstanceFieldValues(Context.Fields.Except(userSupplied), Context.instances);
+                Context.SetInstanceFieldValues(Context.Fields.Except(userSupplied), Context.Instances);
             }
 
             return false;

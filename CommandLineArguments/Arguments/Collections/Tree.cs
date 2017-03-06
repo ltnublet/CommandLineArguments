@@ -19,12 +19,10 @@ namespace Arguments.Collections
         /// <param name="root">The root of the tree. Must be non-null.</param>
         public Tree(TreeNode<T> root)
         {
-            if (root == null)
-            {
-                throw new ArgumentNullException(nameof(root), "Instances of this class must implement a non-null root.");
-            }
-
-            this.Root = root;
+            this.Root = root ?? 
+                throw new ArgumentNullException(
+                    nameof(root), 
+                    "Instances of this class must implement a non-null root.");
         }
 
         /// <summary>

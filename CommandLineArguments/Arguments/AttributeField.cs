@@ -8,7 +8,7 @@ namespace Arguments
     /// <summary>
     /// Essentially a named tuple for pairs of <see cref="ArgumentAttribute"/>s and <see cref="FieldInfo"/>s.
     /// </summary>
-    public class AttributeField
+    internal class AttributeField
     {
         /// <summary>
         /// Instantiates an <see cref="AttributeField"/> object using the supplied parameters.

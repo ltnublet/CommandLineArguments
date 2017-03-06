@@ -99,8 +99,7 @@ namespace Arguments.Collections
         /// </summary>
         public void Dispose()
         {
-            IDisposable asDisposable = this.Value as IDisposable;
-            if (asDisposable != null)
+            if (this.Value is IDisposable asDisposable)
             {
                 asDisposable.Dispose();
             }
