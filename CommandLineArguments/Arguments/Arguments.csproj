@@ -30,9 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Diagnostics.Runtime, Version=0.8.31.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Diagnostics.Runtime.Latest.0.8.31.1\lib\net45\Microsoft.Diagnostics.Runtime.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -51,12 +48,8 @@
     <Compile Include="Context.cs">
       <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
-    <Compile Include="HeapWalker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringUtil.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
