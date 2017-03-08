@@ -7,8 +7,8 @@
     <ProjectGuid>{5021B2F0-46A9-4BAE-B49E-27DFE1F7F2A9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Arguments</RootNamespace>
-    <AssemblyName>Arguments</AssemblyName>
+    <RootNamespace>Drexel.Arguments</RootNamespace>
+    <AssemblyName>Drexel.Arguments</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
