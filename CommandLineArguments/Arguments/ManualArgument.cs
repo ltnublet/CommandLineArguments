@@ -53,7 +53,7 @@ namespace Drexel.Arguments
         }
 
         /// <summary>
-        /// Instantiates a <see cref="ManualArgument"/> using the supplied parameters.
+        /// Instantiates a <see cref="ManualArgument"/> using the supplied parameter.
         /// </summary>
         /// <param name="longName">The long name by which to expose the argument; for example, TimeoutLength.</param>
         /// <param name="shortName">The short name by which to expose the argument; for example, t.</param>
@@ -117,6 +117,88 @@ namespace Drexel.Arguments
                     shortName,
                     description,
                     actionWhenSupplied)
+        {
+            this.missingAction = actionWhenMissing;
+        }
+        
+        /// <summary>
+        /// Instantiates a <see cref="ManualArgument"/> using the supplied parameter, but with additional logic based on whether the user supplied the associated longName or shortName at runtime.
+        /// </summary>
+        /// <param name="longName">The long name by which to expose the argument; for example, TimeoutLength.</param>
+        /// <param name="shortName">The short name by which to expose the argument; for example, t.</param>
+        /// <param name="exampleValue">An example of a valid value the argument could be.</param>
+        /// <param name="description">A brief description of what the argument does or is used for.</param>
+        /// <param name="actionWhenSupplied">Performs some runtime mutation of other-scoped variables based on the argument.</param>
+        /// <param name="actionWhenMissing">Performs some runtime mutation of other-scoped variables, but only when the argument is not supplied.</param>
+        /// <example>
+        /// ManualArgument myArg = 
+        ///     new ManualArgument(
+        ///         "longName", 
+        ///         "shortName", 
+        ///         "exampleValue",
+        ///         "description", 
+        ///         arg => throw new NotImplementedException(), 
+        ///         () => throw new InvalidOperationException());
+        /// For this example argument, if the user runs the program with the argument "longName" or "shortName", a NotImplementedException will be thrown.
+        /// However, if the user does not run the program with the argument "longName" or "shortName", an InvalidOperationException will be thrown.
+        /// This example shows how the <paramref name="actionWhenSupplied"/> and <paramref name="actionWhenMissing"/> are affected by the user supplying or not supplying the associated argument to the program.
+        /// </example>
+        public ManualArgument(
+            string longName,
+            string shortName,
+            string exampleValue,
+            string description,
+            Action<string> actionWhenSupplied,
+            Action actionWhenMissing)
+                : this(
+                      longName,
+                      shortName,
+                      exampleValue,
+                      description,
+                      actionWhenSupplied)
+        {
+            this.missingAction = actionWhenMissing;
+        }
+
+        /// <summary>
+        /// Instantiates a <see cref="ManualArgument"/> using the supplied parameters, but with additional logic based on whether the user supplied the associated longName or shortName at runtime.
+        /// </summary>
+        /// <param name="longName">The long name by which to expose the argument; for example, TimeoutLength.</param>
+        /// <param name="shortName">The short name by which to expose the argument; for example, t.</param>
+        /// <param name="exampleValue">An example of a valid value the argument could be.</param>
+        /// <param name="description">A brief description of what the argument does or is used for.</param>
+        /// <param name="argumentCount">The number of sequential following inputs this argument accepts.</param>
+        /// <param name="actionWhenSupplied">Performs some runtime mutation of other-scoped variables based on the arguments.</param>
+        /// <param name="actionWhenMissing">Performs some runtime mutation of other-scoped variables, but only when the argument is not supplied.</param>
+        /// <example>
+        /// ManualArgument myArg = 
+        ///     new ManualArgument(
+        ///         "longName", 
+        ///         "shortName", 
+        ///         "exampleValue",
+        ///         "description",
+        ///         3,
+        ///         arg => throw new NotImplementedException(string.Join(", ", arg)), 
+        ///         () => throw new InvalidOperationException());
+        /// For this example argument, if the user runs the program with the argument "longName" or "shortName", a NotImplementedException will be thrown where the exception message contains the values supplied for the argument.
+        /// However, if the user does not run the program with the argument "longName" or "shortName", an InvalidOperationException will be thrown.
+        /// This example shows how the <paramref name="actionWhenSupplied"/> and <paramref name="actionWhenMissing"/> are affected by the user supplying or not supplying the associated argument to the program.
+        /// </example>
+        public ManualArgument(
+            string longName,
+            string shortName,
+            string exampleValue,
+            string description,
+            int argumentCount,
+            Action<IEnumerable<string>> actionWhenSupplied,
+            Action actionWhenMissing)
+                : this(
+                      longName,
+                      shortName,
+                      exampleValue,
+                      description,
+                      argumentCount,
+                      actionWhenSupplied)
         {
             this.missingAction = actionWhenMissing;
         }
