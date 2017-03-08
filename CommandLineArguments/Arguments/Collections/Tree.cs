@@ -16,8 +16,8 @@ namespace Drexel.Arguments.Collections
         /// <param name="root">The root of the tree. Must be non-null.</param>
         public Tree(TreeNode<T> root)
         {
-            // Spurious SA0102 error caused by C#7 feature.
-            this.Root = root ?? 
+            this.Root = root ??
+                // Spurious SA0102 error caused by C#7 feature.
                 throw new ArgumentNullException(
                     nameof(root), 
                     "Instances of this class must implement a non-null root.");

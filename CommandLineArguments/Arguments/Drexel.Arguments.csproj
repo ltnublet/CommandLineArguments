@@ -50,8 +50,8 @@
       <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
     <Compile Include="IArgument.cs" />
+    <Compile Include="ManualArgument.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sets\ArgumentSet.cs" />
     <Compile Include="StringUtil.cs" />
   </ItemGroup>
   <ItemGroup>

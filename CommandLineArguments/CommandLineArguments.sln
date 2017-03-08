@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\Settings.StyleCop = ..\Settings.StyleCop
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arguments", "Arguments\Arguments.csproj", "{5021B2F0-46A9-4BAE-B49E-27DFE1F7F2A9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drexel.Arguments", "Arguments\Drexel.Arguments.csproj", "{5021B2F0-46A9-4BAE-B49E-27DFE1F7F2A9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arguments.Tests", "Arguments.Tests\Arguments.Tests.csproj", "{6283AC96-C259-4DC7-81F6-90DA01174F2C}"
 EndProject

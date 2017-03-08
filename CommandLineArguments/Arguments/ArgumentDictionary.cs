@@ -118,5 +118,16 @@ namespace Drexel.Arguments
         {
             return this.innerContainer.ContainsKey(key);
         }
+
+        /// <summary>
+        /// Determines whether the <see cref="ArgumentDictionary"/> contains the specified <paramref name="argument"/>, using the <see cref="IArgument.LongName"/> and <see cref="IArgument.ShortName"/> as the indexers.
+        /// </summary>
+        /// <param name="argument">The key to locate in the <see cref="ArgumentDictionary"/>.</param>
+        /// <returns>True if the <see cref="ArgumentDictionary"/> contained the key, and false otherwise.</returns>
+        public bool ContainsKey(IArgument argument)
+        {
+            return this.innerContainer.ContainsKey(argument.LongName) 
+                || this.innerContainer.ContainsKey(argument.ShortName);
+        }
     }
 }

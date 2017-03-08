@@ -50,9 +50,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Arguments\Arguments.csproj">
+    <ProjectReference Include="..\Arguments\Drexel.Arguments.csproj">
       <Project>{5021b2f0-46a9-4bae-b49e-27dfe1f7f2a9}</Project>
-      <Name>Arguments</Name>
+      <Name>Drexel.Arguments</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

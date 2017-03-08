@@ -16,11 +16,25 @@ namespace Drexel.Arguments
 
         private static Lazy<ArgumentDictionary> fields = new Lazy<ArgumentDictionary>(Context.Iterate);
 
+        private static ArgumentGroup manualArguments = null;
+
         /// <summary>
         /// Backing field for the <see cref="Context.instances"/> property. Used to allow the garbage collector to
         /// clean up objects without the user needing to keep track of what they've registered.
         /// </summary>
         private static List<WeakReference<object>> backingInstances = new List<WeakReference<object>>();
+
+        private static Tree<string> backingParsedArgs = null;
+
+        /// <summary>
+        /// Indicates whether the <see cref="Context"/> has been invoked. A <see cref="Context"/> can only be invoked once.
+        /// </summary>
+        public static bool Invoked { get; private set; } = false;
+
+        /// <summary>
+        /// Indicates whether the <see cref="Context"/> has been initialized. A <see cref="Context"/> must be initalized before being invoked.
+        /// </summary>
+        public static bool Initialized { get; private set; } = false;
 
         /// <summary>
         /// All fields decorated with <see cref="ArgumentAttribute"/>s in the executing assembly.
@@ -51,13 +65,38 @@ namespace Drexel.Arguments
         }
 
         /// <summary>
-        /// Parse <paramref name="args"/> using the <paramref name="parameterDelimiters"/>, and set all instance fields to either their default or supplied value.
+        /// Hides the <see cref="Context.backingParsedArgs"/> field from consumers to enforce initialization before use.
         /// </summary>
-        /// <param name="args">The arguments to use as the source of user-supplied values. When null, initializes using all defaults.</param>
+        private static Tree<string> ParsedArgs
+        {
+            get
+            {
+                if (Context.backingParsedArgs == null)
+                {
+                    throw new InvalidOperationException("Must initialize the context before accessing its arguments.");
+                }
+
+                return Context.backingParsedArgs;
+            }
+            set
+            {
+                Context.backingParsedArgs = value;
+            }
+        }
+
+        /// <summary>
+        /// Parse <paramref name="args"/> using the <paramref name="parameterDelimiters"/>, and set all appropriate context parameters.
+        /// </summary>
+        /// <param name="args">The arguments to use as the source of user-supplied values. When null, fields will be initialized to their default value.</param>
         /// <param name="parameterDelimiters">The allowed parameter delimiters preceeding long or short names.</param>
-        /// <param name="helpParameter">The help parameter - if present in <paramref name="args"/>, short-circuit setting instance field values.</param>
+        /// <param name="helpParameter">The help parameter - if present in <paramref name="args"/>, return true.</param>
+        /// <param name="manualArguments">Any arguments which have a manual procedure associated with them (for example, their value is not known at compile time).</param>
         /// <returns>True if help was requested, and false otherwise.</returns>
-        public static bool Initialize(string[] args = null, string[] parameterDelimiters = null, string helpParameter = null)
+        public static bool Initialize(
+            string[] args = null, 
+            string[] parameterDelimiters = null, 
+            string helpParameter = null,
+            ArgumentGroup manualArguments = null)
         {
             if (args == null)
             {
@@ -74,73 +113,107 @@ namespace Drexel.Arguments
                 helpParameter = string.Empty;
             }
 
-            if (parameterDelimiters.Select(
-                delimiter => 
-                    delimiter + helpParameter)
-                .Any(helpRequested => 
-                    args.Any(argument => 
-                        argument.Equals(helpRequested))))
+            if (manualArguments ==  null)
             {
-                return true;
-            }
-            else
-            {
-                List<AttributeField> userSupplied = new List<AttributeField>();
-
-                Tree<string> parsed = Context.ParseArgs("Context", parameterDelimiters, args);
-                foreach (TreeNode<string> argument in parsed.Root.Children)
-                {
-                    if (fields.Value.ContainsKey(argument.Value))
-                    {
-                        IEnumerable<AttributeField> currentPosition = fields.Value[argument.Value];
-                        if (currentPosition.Count() == 1                    // There is a single expected field for that attribute.
-                            && currentPosition.First().Attr.Position == -1  // The only expected field is a flag.
-                            && argument.Children.Count == 0)                // No value was supplied for the field.
-                        {
-                            Context.SetInstanceFieldValue(
-                                "True", 
-                                currentPosition.First(), 
-                                Context.Instances);
-
-                            userSupplied.Add(currentPosition.First());
-                        }
-                        else if (currentPosition.Count() == argument.Children.Count)
-                        {
-                            for (int counter = 0; counter < argument.Children.Count; counter++)
-                            {
-                                AttributeField currentField = currentPosition.ElementAt(counter);
-                                Context.SetInstanceFieldValue(
-                                    argument.Children[counter].Value,
-                                    currentField,
-                                    Context.Instances);
-
-                                userSupplied.Add(currentField);
-                            }
-                        }
-                        else
-                        {
-                            throw new ArgumentException($"Malformed argument \"{argument.Value}\".");
-                        }
-                    }
-                    else
-                    {
-                        throw new ArgumentException($"Unrecognized argument \"{argument.Value}\".");
-                    }
-                }
-
-                Context.SetInstanceFieldValues(Context.Fields.Except(userSupplied), Context.Instances);
+                manualArguments = new ArgumentGroup();
             }
 
-            return false;
+            IEnumerable<string> helpParamWithDelim = 
+                parameterDelimiters.Select(delimiter => delimiter + helpParameter);
+            IEnumerable<string> argsWithoutHelpRequest = args.Except(helpParamWithDelim);
+
+            Context.ParsedArgs = 
+                Context.ParseArgs("Context", parameterDelimiters, argsWithoutHelpRequest.ToArray());
+
+            Context.manualArguments = manualArguments;
+
+            return !argsWithoutHelpRequest.SequenceEqual(args); ;
         }
 
         /// <summary>
-        /// Set all instance fields to their default values for only a single instance.
+        /// Set all instance fields to their default values for a single object.
         /// </summary>
         /// <param name="instance">The object to perform the operation on.</param>
         public static void Initialize(object instance)
         {
             Context.SetInstanceFieldValues(Context.Fields, new object[] { instance });
+        }
+
+        /// <summary>
+        /// Invokes the <see cref="Context"/>, initializing any objects in <see cref="Context.Instances"/> with the appropriate values.
+        /// </summary>
+        public static void Invoke()
+        {
+            if (Context.Invoked)
+            {
+                throw new InvalidOperationException("Cannot invoke multiple times.");
+            }
+
+            IEnumerable<string> alreadyUsedNames =
+                Context.manualArguments
+                    .Where(x => fields.Value.ContainsKey(x.LongName))
+                    .Select(x => x.LongName)
+                .Concat(
+                    Context.manualArguments
+                        .Where(x => fields.Value.ContainsKey(x.ShortName))
+                        .Select(x => x.ShortName));
+
+            if (alreadyUsedNames.Any())
+            {
+                throw new InvalidOperationException(
+                    $"ArgumentGroup contained argument names already in use: {string.Join(", ", alreadyUsedNames)}");
+            }
+
+            // NOTE: Right now, userSupplied isn't used, but is correctly built. Might need this later to determine
+            // which arguments were handled by ArgumentAttribute vs. ManualArgument.
+            List<AttributeField> userSupplied = new List<AttributeField>();
+
+            Context.SetInstanceFieldValues(Context.Fields.Except(userSupplied), Context.Instances);
+
+            IEnumerable<string> remaining = Context.manualArguments.Invoke(Context.ParsedArgs);
+                        
+            foreach (TreeNode<string> argument in 
+                Context.ParsedArgs.Root.Children.Where(x => remaining.Contains(x.Value)))
+            {
+                if (fields.Value.ContainsKey(argument.Value))
+                {
+                    IEnumerable<AttributeField> currentPosition = fields.Value[argument.Value];
+                    if (currentPosition.Count() == 1                    // There is a single expected field for that attribute.
+                        && currentPosition.First().Attr.Position == -1  // The only expected field is a flag.
+                        && argument.Children.Count == 0)                // No value was supplied for the field.
+                    {
+                        Context.SetInstanceFieldValue(
+                            "True",
+                            currentPosition.First(),
+                            Context.Instances);
+
+                        userSupplied.Add(currentPosition.First());
+                    }
+                    else if (currentPosition.Count() == argument.Children.Count)
+                    {
+                        for (int counter = 0; counter < argument.Children.Count; counter++)
+                        {
+                            AttributeField currentField = currentPosition.ElementAt(counter);
+                            Context.SetInstanceFieldValue(
+                                argument.Children[counter].Value,
+                                currentField,
+                                Context.Instances);
+
+                            userSupplied.Add(currentField);
+                        }
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"Malformed argument \"{argument.Value}\".");
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException($"Unrecognized argument \"{argument.Value}\".");
+                }
+            }
+
+            Context.Invoked = true;
         }
 
         /// <summary>

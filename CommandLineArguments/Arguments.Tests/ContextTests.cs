@@ -2,6 +2,8 @@
 using Xunit;
 using Drexel.Arguments;
 using Drexel.Arguments.Collections;
+using System;
+using System.Reflection;
 
 namespace Arguments.Tests
 {
@@ -28,6 +30,12 @@ namespace Arguments.Tests
         [ArgumentAttribute(BoolKnowns.Default, BoolKnowns.LongName, BoolKnowns.ShortName, BoolKnowns.Example, BoolKnowns.Description, -1)]
         public bool BoolAttributeFlag;
 
+        // HACK: Because Context is static, we reset the instance before each test.
+        public ContextTests()
+        {
+            ContextTests.PerformReset();
+        }
+
         [Fact]
         public void Initialize_RegisteredInstances_ShouldSucceed()
         {
@@ -39,6 +47,7 @@ namespace Arguments.Tests
             Context.Register(instanceTwo);
 
             Context.Initialize();
+            Context.Invoke();
 
             Assert.True(ContextTests.DefaultFieldsEqual(this));
             Assert.True(ContextTests.DefaultFieldsEqual(instanceOne));
@@ -62,6 +71,8 @@ namespace Arguments.Tests
 
             Context.Initialize(new string[] { $"-{StrKnowns.LongName}", testValue }, new string[] { "-" });
 
+            Context.Invoke();
+
             Assert.Equal(testValue, this.StrAttribute);
             Assert.Equal(double.Parse(DblKnowns.Default), this.DblAttribute);
             Assert.Equal(int.Parse(IntKnowns.Default), this.IntAttribute);
@@ -80,6 +91,8 @@ namespace Arguments.Tests
                 new string[] { $"-{StrKnowns.PositionalOneLongName}", testValue1, testValue2, testValue3 },
                 new string[] { "-" });
 
+            Context.Invoke();
+
             Assert.Equal(testValue1, this.StrAttributePositionalOne);
             Assert.Equal(testValue2, this.StrAttributePositionalTwo);
             Assert.Equal(testValue3, this.StrAttributePositionalThree);
@@ -91,6 +104,8 @@ namespace Arguments.Tests
             Context.Register(this);
 
             Context.Initialize(new string[] { $"-{BoolKnowns.LongName}" }, new string[] { "-" });
+
+            Context.Invoke();
 
             Assert.Equal(true, this.BoolAttributeFlag);
         }
@@ -130,6 +145,14 @@ namespace Arguments.Tests
             return StrKnowns.Default.Equals(instance.StrAttribute)
                 && DblKnowns.Default.Equals(instance.DblAttribute.ToString())
                 && IntKnowns.Default.Equals(instance.IntAttribute.ToString());
+        }
+
+        private static void PerformReset()
+        {
+            Type staticType = typeof(Context);
+            ConstructorInfo ci = staticType.TypeInitializer;
+            object[] parameters = new object[0];
+            ci.Invoke(null, parameters);
         }
     }
 }
