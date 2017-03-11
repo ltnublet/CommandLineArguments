@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Drexel.Arguments</id>
-    <version>0.0.4-alpha</version>
+    <version>0.0.5-alpha</version>
     <title>Drexel.Arguments</title>
     <authors>Max Drexel</authors>
     <owners>Max Drexel</owners>
@@ -10,7 +10,10 @@
     <projectUrl>https://github.com/ltnublet/CommandLineArguments</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Library for simple user-supplied argument handling.</description>
-    <releaseNotes>Added the option to supply manual arguments, so that it is possible for an argument whose behavior changes at runtime.</releaseNotes>
+    <releaseNotes>
+      0.0.5-alpha: Added support for required arguments, and restricting ArgumentAttribute detection to registered types.
+      0.0.4-alpha: Added the option to supply manual arguments, so that it is possible for an argument whose behavior changes at runtime.
+    </releaseNotes>
     <copyright>Copyright 2017</copyright>
     <tags>arguments</tags>
   </metadata>

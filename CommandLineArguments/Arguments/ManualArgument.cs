@@ -41,7 +41,8 @@ namespace Drexel.Arguments
             string exampleValue, 
             string description,
             int argumentCount, 
-            Action<IEnumerable<string>> action)
+            Action<IEnumerable<string>> action,
+            bool required = false)
         {
             this.LongName = longName;
             this.ShortName = shortName;
@@ -49,6 +50,7 @@ namespace Drexel.Arguments
             this.ExampleValue = exampleValue;
             this.argumentCount = argumentCount;
             this.argumentAction = action;
+            this.Required = required;
             this.missingAction = null;
         }
 
@@ -65,14 +67,16 @@ namespace Drexel.Arguments
             string shortName,
             string exampleValue,
             string description,
-            Action<string> action) 
+            Action<string> action,
+            bool required = false) 
                 : this(
                       longName, 
                       shortName,
                       exampleValue, 
                       description, 
                       1, 
-                      x => action(x?.FirstOrDefault()))
+                      x => action(x?.FirstOrDefault()),
+                      required)
         {
         }
 
@@ -222,6 +226,11 @@ namespace Drexel.Arguments
         /// An example of a valid value the argument could be.
         /// </summary>
         public string ExampleValue { get; protected set; }
+
+        /// <summary>
+        /// Indicates whether the argument is required.
+        /// </summary>
+        public bool Required { get; protected set; }
 
         /// <summary>
         /// Invokes the <see cref="ManualArgument.argumentAction"/>.

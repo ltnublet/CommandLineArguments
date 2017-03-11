@@ -24,5 +24,10 @@
         /// An example of a valid value the argument could be.
         /// </summary>
         string ExampleValue { get; }
+
+        /// <summary>
+        /// Represents whether the argument is required.
+        /// </summary>
+        bool Required { get; }
     }
 }

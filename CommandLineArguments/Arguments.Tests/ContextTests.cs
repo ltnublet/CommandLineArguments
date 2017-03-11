@@ -137,7 +137,29 @@ namespace Arguments.Tests
             Assert.Equal("is", result.Root.Children.First().Children.First().Value);
             Assert.Equal("a", result.Root.Children.First().Children.Skip(1).First().Value);
             Assert.Equal("test", result.Root.Children.First().Children.Skip(2).First().Value);
+        }
 
+        [Fact]
+        public void Invoke_RequiredArgumentsMissing_ThrowsArgument()
+        {
+            ArgumentException exc = null;
+
+            try
+            {
+                HasRequiredArguments required = new HasRequiredArguments();
+                Context.Register(required);
+                Context.Initialize();
+                Context.Invoke(ControlModes.AssemblyWide);
+            }
+            catch (ArgumentException e)
+            {
+                exc = e;
+                Assert.True(e.Message.ToLowerInvariant().Contains("missing required argument"));
+            }
+
+            Assert.True(
+                exc != null, 
+                "Context.Invoke did not throw exception when required argument was missing");
         }
 
         private static bool DefaultFieldsEqual(ContextTests instance)

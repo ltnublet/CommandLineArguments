@@ -7,6 +7,21 @@ using Drexel.Arguments.Collections;
 namespace Drexel.Arguments
 {
     /// <summary>
+    /// Controls what objects will be handled when <see cref="Context.Invoke(ControlModes)"/> is called.
+    /// </summary>
+    public enum ControlModes
+    {
+        /// <summary>
+        /// The call to <see cref="Context.Invoke(ControlModes)"/> will operate over all types in all assemblies which possess an <see cref="ArgumentAttribute"/> on one of their fields.
+        /// </summary>
+        AssemblyWide,
+        /// <summary>
+        /// The call to <see cref="Context.Invoke(ControlModes)"/> will operate only over types which have been registered with <see cref="Context.Register(object)"/>.
+        /// </summary>
+        RegisteredTypesOnly
+    }
+
+    /// <summary>
     /// Maintains the executing context.
     /// </summary>
     public static class Context
@@ -14,7 +29,8 @@ namespace Drexel.Arguments
         private static BindingFlags bindingFlags = 
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField;
 
-        private static Lazy<ArgumentDictionary> fields = new Lazy<ArgumentDictionary>(Context.Iterate);
+        private static Lazy<ArgumentDictionary> fields = 
+            new Lazy<ArgumentDictionary>(() => Context.Iterate(new Type[0]));
 
         private static ArgumentGroup manualArguments = null;
 
@@ -142,11 +158,21 @@ namespace Drexel.Arguments
         /// <summary>
         /// Invokes the <see cref="Context"/>, initializing any objects in <see cref="Context.Instances"/> with the appropriate values.
         /// </summary>
-        public static void Invoke()
+        /// <param name="mode">Controls the scope of the invocation. View <see cref="ControlModes"/> for information on what these do.</param>
+        public static void Invoke(ControlModes mode = ControlModes.RegisteredTypesOnly)
         {
             if (Context.Invoked)
             {
                 throw new InvalidOperationException("Cannot invoke multiple times.");
+            }
+
+            if (mode == ControlModes.RegisteredTypesOnly)
+            {
+                Context.fields = new Lazy<ArgumentDictionary>(() => 
+                    Context.Iterate(
+                        Context.Instances
+                        .Select(x => x.GetType())
+                        .Distinct()));
             }
 
             IEnumerable<string> alreadyUsedNames =
@@ -164,16 +190,14 @@ namespace Drexel.Arguments
                     $"ArgumentGroup contained argument names already in use: {string.Join(", ", alreadyUsedNames)}");
             }
 
-            // NOTE: Right now, userSupplied isn't used, but is correctly built. Might need this later to determine
-            // which arguments were handled by ArgumentAttribute vs. ManualArgument.
-            List<AttributeField> userSupplied = new List<AttributeField>();
+            Context.SetInstanceFieldValues(Context.Fields, Context.Instances);
+            
+            List<IArgument> userSupplied = 
+                Context.manualArguments.Invoke(Context.ParsedArgs).ToList();
 
-            Context.SetInstanceFieldValues(Context.Fields.Except(userSupplied), Context.Instances);
-
-            IEnumerable<string> remaining = Context.manualArguments.Invoke(Context.ParsedArgs);
-                        
             foreach (TreeNode<string> argument in 
-                Context.ParsedArgs.Root.Children.Where(x => remaining.Contains(x.Value)))
+                Context.ParsedArgs.Root.Children.Where(x => 
+                    !userSupplied.Any(y => x.Value == y.LongName || x.Value == y.ShortName)))
             {
                 if (fields.Value.ContainsKey(argument.Value))
                 {
@@ -187,7 +211,7 @@ namespace Drexel.Arguments
                             currentPosition.First(),
                             Context.Instances);
 
-                        userSupplied.Add(currentPosition.First());
+                        userSupplied.Add(currentPosition.First().Attr);
                     }
                     else if (currentPosition.Count() == argument.Children.Count)
                     {
@@ -199,7 +223,7 @@ namespace Drexel.Arguments
                                 currentField,
                                 Context.Instances);
 
-                            userSupplied.Add(currentField);
+                            userSupplied.Add(currentField.Attr);
                         }
                     }
                     else
@@ -211,6 +235,24 @@ namespace Drexel.Arguments
                 {
                     throw new ArgumentException($"Unrecognized argument \"{argument.Value}\".");
                 }
+            }
+
+            IArgument[] remainingArguments = 
+                Context.Fields
+                    .Select(x => (IArgument)x.Attr)
+                    .Concat(Context.manualArguments)
+                    .Except(userSupplied)
+                    .ToArray();
+            
+            if (remainingArguments.Any(x => x.Required))
+            {
+                IEnumerable<string> missingRequiredArguments = 
+                    remainingArguments
+                        .Where(x => x.Required)
+                        .Select(x => $"{x.ShortName} ({x.LongName})");
+
+                throw new ArgumentException(
+                    $"Missing required arguments: {string.Join(", ", missingRequiredArguments)}");
             }
 
             Context.Invoked = true;
@@ -235,7 +277,10 @@ namespace Drexel.Arguments
         /// <param name="parameterDelimiters">The set of valid parameter delimiters.</param>
         /// <param name="args">The arguments to convert to a <see cref="Tree{string}"/>.</param>
         /// <returns>A <see cref="Tree{string}"/> representing the supplied <paramref name="args"/>, with a root of value <paramref name="rootValue"/>.</returns>
-        internal static Tree<string> ParseArgs(string rootValue, IEnumerable<string> parameterDelimiters, string[] args)
+        internal static Tree<string> ParseArgs(
+            string rootValue, 
+            IEnumerable<string> parameterDelimiters, 
+            string[] args)
         {
             TreeNode<string> root = new TreeNode<string>(rootValue);
             TreeNode<string> current = root;
@@ -261,27 +306,35 @@ namespace Drexel.Arguments
         /// <summary>
         /// Reflects over the assembly to populate the <see cref="Fields"/>.
         /// </summary>
+        /// <param name="restrictedToTypes">An <see cref="IEnumerable{Type}"/> containing types which should be included in the resulting <see cref="ArgumentDictionary"/>.</param>
         /// <returns>
         /// An <see cref="ArgumentDictionary"/>s representing all fields in the executing assembly decorated with an <see cref="ArgumentAttribute"/>.
         /// </returns>
-        private static ArgumentDictionary Iterate()
+        private static ArgumentDictionary Iterate(IEnumerable<Type> restrictedToTypes)
         {
+            // TODO: Review whether it's appropriate to use restrictedToTypes like this. Maybe should
+            // only perform the assembly search if restrictedToTypes.Any() == false?
+
             ArgumentDictionary returnValue = new ArgumentDictionary();
-            List<Type> types = new List<Type>();
+            List<Type> assemblyTypes = new List<Type>();
 
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 try
                 {
-                    types.AddRange(assembly.GetTypes());
+                    assemblyTypes.AddRange(assembly.GetTypes());
                 }
                 catch (ReflectionTypeLoadException)
                 {
                     // Ignore this exception type.
                 }
             }
+
+            List<Type> toInclude = restrictedToTypes.Any() 
+                ? restrictedToTypes.Where(x => assemblyTypes.Contains(x)).ToList()
+                : assemblyTypes;
             
-            foreach (Type type in types)
+            foreach (Type type in toInclude)
             {
                 foreach (FieldInfo field in type.GetFields(Context.bindingFlags))
                 {

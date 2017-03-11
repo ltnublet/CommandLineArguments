@@ -43,6 +43,28 @@ namespace Drexel.Arguments
         }
 
         /// <summary>
+        /// Checks if any <see cref="ManualArgument"/> contained by this group has a name that matches <paramref name="name"/>.
+        /// </summary>
+        /// <param name="name">The name for which to look for a matching argument.</param>
+        /// <returns>True if a matching argument was contained by this group, and false otherwise.</returns>
+        public bool ContainsArgument(string name)
+        {
+            return this.Any(x => x.LongName == name || x.ShortName == name);
+        }
+
+        /// <summary>
+        /// Checks if any <see cref="ManualArgument"/> contained by this group has a signature that matches <paramref name="argument"/>.
+        /// </summary>
+        /// <param name="argument">The argument for which to look for a match.</param>
+        /// <returns>True if a matching argument was contained by this group, and false otherwise.</returns>
+        public bool ContainsArgument(IArgument argument)
+        {
+            return this.Any(x => 
+                x.LongName == argument.LongName 
+                || x.ShortName == argument.ShortName);
+        }
+
+        /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>An enumerator that iterates through the collection.</returns>
@@ -60,11 +82,11 @@ namespace Drexel.Arguments
         /// <see cref="ManualArgument"/> with the same long or short name as one of the supplied arguments in 
         /// <paramref name="tree"/>.
         /// </exception>
-        /// <returns>Any argument names for which a corresponding <see cref="ManualArgument.InvokeSupplied(string[])"/> was not performed.</returns>
-        internal IEnumerable<string> Invoke(Tree<string> tree)
+        /// <returns>Any arguments for which a corresponding <see cref="ManualArgument.InvokeSupplied(string[])"/> was performed.</returns>
+        internal IEnumerable<IArgument> Invoke(Tree<string> tree)
         {
             List<ManualArgument> arguments = this.Arguments.ToList();
-            List<string> handled = new List<string>();
+            List<IArgument> handled = new List<IArgument>();
 
             foreach (TreeNode<string> node in tree.Root.Children)
             {
@@ -76,8 +98,7 @@ namespace Drexel.Arguments
                 {
                     argument.InvokeSupplied(node.Skip(1).ToArray());
                     arguments.Remove(argument);
-                    handled.Add(argument.LongName);
-                    handled.Add(argument.ShortName);
+                    handled.Add(argument);
                 }
             }
 
@@ -86,7 +107,7 @@ namespace Drexel.Arguments
                 argument.InvokeMissing();
             }
 
-            return tree.Root.Children.Select(x => x.Value).Except(handled);
+            return handled;
         }
     }
 }

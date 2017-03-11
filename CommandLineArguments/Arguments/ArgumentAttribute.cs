@@ -21,13 +21,15 @@ namespace Drexel.Arguments
         /// Defaults to 0. For example, given "-Arguments A B C", A is position 0, B is position 1, etc. 
         /// If no command line value is required, the argument would take the form of "-Argument".
         /// </param>
+        /// <param name="required">Indicates whether the argument is required to be supplied.</param>
         public ArgumentAttribute(
             string defaultValue, 
             string longName, 
             string shortName,
             string exampleValue,
             string description,
-            int position = 0)
+            int position = 0,
+            bool required = false)
         {
             this.DefaultValue = defaultValue;
             this.ExampleValue = exampleValue;
@@ -35,6 +37,7 @@ namespace Drexel.Arguments
             this.ShortName = shortName;
             this.Description = description;
             this.Position = position;
+            this.Required = required;
         }
 
         /// <summary>
@@ -90,5 +93,13 @@ namespace Drexel.Arguments
         /// is "--Argument", the position is -1.
         /// </example>
         public int Position { get; private set; }
+
+        /// <summary>
+        /// Indicates whether the associated argument is required to be supplied.
+        /// </summary>
+        /// <example>
+        /// For an argument which must be supplied, this value will be <see cref="true"/>. Otherwise, <see cref="false"/>.
+        /// </example>
+        public bool Required { get; private set; }
     }
 }
