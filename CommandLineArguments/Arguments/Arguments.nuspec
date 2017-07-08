@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Drexel.Arguments</id>
-    <version>0.0.5-alpha</version>
+    <version>0.0.6-alpha</version>
     <title>Drexel.Arguments</title>
     <authors>Max Drexel</authors>
     <owners>Max Drexel</owners>
@@ -11,6 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Library for simple user-supplied argument handling.</description>
     <releaseNotes>
+      0.0.6-alpha: Exposed the IArgument collection contained within the Context, so that retrieving the argument details is easy.
       0.0.5-alpha: Added support for required arguments, and restricting ArgumentAttribute detection to registered types.
       0.0.4-alpha: Added the option to supply manual arguments, so that it is possible for an argument whose behavior changes at runtime.
     </releaseNotes>
