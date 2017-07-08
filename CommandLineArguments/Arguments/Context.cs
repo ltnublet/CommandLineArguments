@@ -15,6 +15,7 @@ namespace Drexel.Arguments
         /// The call to <see cref="Context.Invoke(ControlModes)"/> will operate over all types in all assemblies which possess an <see cref="ArgumentAttribute"/> on one of their fields.
         /// </summary>
         AssemblyWide,
+
         /// <summary>
         /// The call to <see cref="Context.Invoke(ControlModes)"/> will operate only over types which have been registered with <see cref="Context.Register(object)"/>.
         /// </summary>
@@ -51,6 +52,17 @@ namespace Drexel.Arguments
         /// Indicates whether the <see cref="Context"/> has been initialized. A <see cref="Context"/> must be initalized before being invoked.
         /// </summary>
         public static bool Initialized { get; private set; } = false;
+
+        /// <summary>
+        /// Represents the <see cref="IArgument"/>s in the scope of the current <see cref="Context"/>.
+        /// </summary>
+        public static IEnumerable<IArgument> Arguments
+        {
+            get
+            {
+                return Context.Fields.Select(x => x.Attr).Concat<IArgument>(Context.manualArguments);
+            }
+        }
 
         /// <summary>
         /// All fields decorated with <see cref="ArgumentAttribute"/>s in the executing assembly.
@@ -94,6 +106,7 @@ namespace Drexel.Arguments
 
                 return Context.backingParsedArgs;
             }
+
             set
             {
                 Context.backingParsedArgs = value;
@@ -129,7 +142,7 @@ namespace Drexel.Arguments
                 helpParameter = string.Empty;
             }
 
-            if (manualArguments ==  null)
+            if (manualArguments == null)
             {
                 manualArguments = new ArgumentGroup();
             }
@@ -143,7 +156,7 @@ namespace Drexel.Arguments
 
             Context.manualArguments = manualArguments;
 
-            return !argsWithoutHelpRequest.SequenceEqual(args); ;
+            return !argsWithoutHelpRequest.SequenceEqual(args);
         }
 
         /// <summary>
@@ -312,9 +325,6 @@ namespace Drexel.Arguments
         /// </returns>
         private static ArgumentDictionary Iterate(IEnumerable<Type> restrictedToTypes)
         {
-            // TODO: Review whether it's appropriate to use restrictedToTypes like this. Maybe should
-            // only perform the assembly search if restrictedToTypes.Any() == false?
-
             ArgumentDictionary returnValue = new ArgumentDictionary();
             List<Type> assemblyTypes = new List<Type>();
 
@@ -330,6 +340,7 @@ namespace Drexel.Arguments
                 }
             }
 
+            // TODO: Review whether it's appropriate to use restrictedToTypes like this. Maybe should only perform the assembly search if restrictedToTypes.Any() == false?
             List<Type> toInclude = restrictedToTypes.Any() 
                 ? restrictedToTypes.Where(x => assemblyTypes.Contains(x)).ToList()
                 : assemblyTypes;

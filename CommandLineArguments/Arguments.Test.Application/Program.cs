@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Drexel.Arguments;
 
 namespace Arguments.Test.Application
@@ -37,6 +38,13 @@ namespace Arguments.Test.Application
             Context.Invoke();
 
             Console.WriteLine($"{parameters.StatusCode}, {parameters.Username}, {parameters.Execute}");
+
+            Console.WriteLine(
+                string.Join(
+                    "\r\n",
+                    Context
+                        .Arguments
+                        .Select(x => $"{x.LongName} ({x.ShortName}): Required - {x.Required}. Example - {x.ExampleValue}. {x.Description}")));
 
             Console.ReadLine();
         }
