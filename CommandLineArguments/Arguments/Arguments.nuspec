@@ -21,6 +21,8 @@
     <tags>arguments</tags>
   </metadata>
   <files>
-    <file src="..\..\build\Drexel.Arguments.xml" target="lib\Net40" />
+    <file src=".\bin\Release\Drexel.Arguments.dll" target="lib\Net452" />
+    <file src=".\bin\Release\Drexel.Arguments.pdb" target="lib\Net452" />
+    <file src=".\bin\Release\Drexel.Arguments.xml" target="lib\Net452" />
   </files>
 </package>
