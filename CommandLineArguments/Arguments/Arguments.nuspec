@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Drexel.Arguments</id>
-    <version>0.0.7-alpha</version>
+    <version>0.0.8-alpha</version>
     <title>Drexel.Arguments</title>
     <authors>Max Drexel</authors>
     <owners>Max Drexel</owners>
@@ -11,6 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Library for simple user-supplied argument handling.</description>
     <releaseNotes>
+      0.0.8-alpha: Actually included the xmldoc output this time.
       0.0.7-alpha: Enabled xmldoc output for Drexel.Arguments project (all those pretty comments were going to waste!)
       0.0.6-alpha: Exposed the IArgument collection contained within the Context, so that retrieving the argument details is easy.
       0.0.5-alpha: Added support for required arguments, and restricting ArgumentAttribute detection to registered types.
@@ -19,4 +20,7 @@
     <copyright>Copyright 2017</copyright>
     <tags>arguments</tags>
   </metadata>
+  <files>
+    <file src="..\..\build\Drexel.Arguments.xml" target="lib\Net40" />
+  </files>
 </package>
